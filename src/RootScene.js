@@ -5,7 +5,7 @@
  * @Project: one_server
  * @Filename: RootScene.js
  * @Last modified by:   mymac
- * @Last modified time: 2017-11-12T16:32:16+08:00
+ * @Last modified time: 2017-11-12T18:10:27+08:00
  */
  //import liraries
  import React, { PureComponent } from 'react'
@@ -27,6 +27,7 @@
  import PaiHangBangPage from './pages/paihangbang/PaiHangBangPage'
  import FenLeiPage from './pages/fenlei/FenLeiPage'
  import ShiJiPage from './pages/shiji/ShiJiPage'
+ import ShouCangPage from './pages/shoucang/ShouCangPage'
  // import NearbyScene from './scene/Nearby/NearbyScene'
  // import MessageScene from './scene/Message/MessageScene'
  // import MineScene from './scene/Mine/MineScene'
@@ -165,7 +166,7 @@
  const Navigator = StackNavigator(
      {
          // Tab: { screen: Tab },
-         Home: { screen: ShiJiPage },
+         Home: { screen: ShouCangPage },
         //  Web: { screen: WebScene },
         //  GroupPurchase: { screen: GroupPurchaseScene },
         //  Nearby: { screen: NearbyScene },
