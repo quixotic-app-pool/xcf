@@ -1,16 +1,19 @@
 /**
- * Sample React Native App
- * https://github.com/facebook/react-native
- * @flow
+ * @Author: MichaelChen <mymac>
+ * @Date:   2017-11-05T17:41:36+08:00
+ * @Email:  teacherincafe@163.com
+ * @Project: one_server
+ * @Filename: App.js
+ * @Last modified by:   mymac
+ * @Last modified time: 2017-11-12T07:24:29+08:00
  */
 
-import React, { Component } from 'react';
+
+import React, { PureComponent } from 'react';
 import {
-  Platform,
-  StyleSheet,
-  Text,
-  View
+  Platform
 } from 'react-native';
+import RootScene from './src/RootScene';
 
 const instructions = Platform.select({
   ios: 'Press Cmd+R to reload,\n' +
@@ -19,39 +22,10 @@ const instructions = Platform.select({
     'Shake or press menu button for dev menu',
 });
 
-export default class App extends Component<{}> {
+export default class App extends PureComponent<{}> {
   render() {
     return (
-      <View style={styles.container}>
-        <Text style={styles.welcome}>
-          Welcome to React Native!
-        </Text>
-        <Text style={styles.instructions}>
-          To get started, edit App.js
-        </Text>
-        <Text style={styles.instructions}>
-          {instructions}
-        </Text>
-      </View>
+      <RootScene />
     );
   }
 }
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-    backgroundColor: '#F5FCFF',
-  },
-  welcome: {
-    fontSize: 20,
-    textAlign: 'center',
-    margin: 10,
-  },
-  instructions: {
-    textAlign: 'center',
-    color: '#333333',
-    marginBottom: 5,
-  },
-});
