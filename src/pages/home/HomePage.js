@@ -5,12 +5,14 @@
  * @Project: one_server
  * @Filename: HomePage.js
  * @Last modified by:   mymac
- * @Last modified time: 2017-11-12T10:40:15+08:00
+ * @Last modified time: 2017-11-14T10:42:32+08:00
  */
 
 import React, { PureComponent } from 'react'
-import { View, Text, Dimensions, StyleSheet, TouchableOpacity, ScrollView, Image, FlatList } from 'react-native'
+import { View, Text, Alert, Dimensions, findNodeHandle,StyleSheet, TouchableOpacity, ScrollView, Image, FlatList } from 'react-native'
 import Icon from 'react-native-vector-icons/Ionicons'
+import Search from 'react-native-search-box';
+import { BlurView } from 'react-native-blur';
 
 import { NavigationItem } from '../../widget'
 
@@ -20,10 +22,20 @@ class HomePage extends PureComponent {
 
   static navigationOptions = ({ navigation }) => ({
         headerTitle: (
-            <TouchableOpacity style={styles.searchBar}>
-              <Icon name="ios-search" style={styles.searchIcon} size={20} color="#4F8EF7" />
-              <Text style={{color: 'rgb(150,150,153)'}}>搜索菜谱、食材</Text>
-            </TouchableOpacity>
+          <View style={{ width: screenWidth - 94}}>
+            <Search
+              ref="search_box"
+              backgroundColor='white'
+              cancelButtonTextStyle={{color: 'black'}}
+              beforeFocus={()=>navigation.state.params.topItemActionFocus()}
+              onCancel={()=>navigation.state.params.topItemActionCancel()}
+              /**
+              * There many props that can customizable
+              * Please scroll down to Props section
+              */
+            />
+
+          </View>
         ),
         headerRight: (
           <View style={{ flexDirection: 'row' }}>
@@ -61,8 +73,25 @@ class HomePage extends PureComponent {
     this._recipeRec = this._recipeRec.bind(this)
     this._renderCell4 = this._renderCell4.bind(this)
     this._chefActivity = this._chefActivity.bind(this)
+    this.topItemActionFocus = this.topItemActionFocus.bind(this)
+    this.topItemActionCancel = this.topItemActionCancel.bind(this)
+    this.state = { viewRef: null, toggle: false };
   }
-
+  componentDidMount() {
+        this.props.navigation.setParams({ topItemActionFocus: this.topItemActionFocus, topItemActionCancel: this.topItemActionCancel })
+      }
+  topItemActionFocus(){
+      if(this.state.toggle == false){
+        this.setState({toggle: true})
+      }
+      return
+  }
+  topItemActionCancel(){
+      if(this.state.toggle == true){
+        this.setState({toggle: false})
+      }
+      return
+  }
   _topic() {
     return (
       <View style={{flexDirection: 'row', justifyContent: 'center'}}>
@@ -274,23 +303,69 @@ class HomePage extends PureComponent {
     )
   }
   render() {
+
+    var latestSearch = ['快手菜','下饭菜', '家常菜']
+    var trend = ['蛋糕','红烧肉', '可乐鸡翅','蛋挞','家常菜', '面包','早餐','糖醋排骨',
+                '豆腐','牛肉','排骨', '茄子','南瓜饼','虾', '土豆','宫保鸡丁','披萨', '汤','蛋黄酥','南瓜']
     return (
-      <ScrollView contentContainerStyle={{backgroundColor: 'white', padding: 15}}>
-        {this._topic()}
-        {this._layer1()}
-        {this._ads1()}
-        {this._studioList()}
-        {this._shopSpecial()}
-        {this._recipeRec()}
-        {this._chefActivity()}
-        {this._ads2()}
-      </ScrollView>
+      <View>
+        <ScrollView contentContainerStyle={{backgroundColor: 'white', padding: 15}}>
+          {this._topic()}
+          {this._layer1()}
+          {this._ads1()}
+          {this._studioList()}
+          {this._shopSpecial()}
+          {this._recipeRec()}
+          {this._chefActivity()}
+          {this._ads2()}
+          {this.state.toggle ?
+            <BlurView
+              style={styles.absolute}
+              blurType="light"
+              blurAmount={10}
+            /> : null
+          }
+        </ScrollView>
+        {this.state.toggle ?
+          <ScrollView style={styles.absolute} contentContainerStyle={{backgroundColor: 'transparent', padding: 15, paddingTop:20}}>
+              <View>
+                <View style={{paddingBottom:10, flexDirection:'row', justifyContent:'space-between'}}>
+                  <Text>最近搜索</Text>
+                  <Text>清空</Text>
+                </View>
+                <View style={{flexDirection:'row', flexWrap:'wrap'}}>
+                  {latestSearch.map((item, index)=>
+                      <View key={index} style={{borderRadius:3, padding:5, paddingHorizontal:10, marginRight:8, marginBottom: 8, backgroundColor:'rgb(237,238,235)'}}>
+                          <Text style={{fontSize:18}}>{item}</Text>
+                      </View>
+                  )}
+                </View>
+              </View>
+              <View style={{marginTop: 30}}>
+                <Text style={{paddingBottom:10, }}>流行搜索</Text>
+                <View style={{flexDirection:'row',flexWrap:'wrap'}}>
+                  {trend.map((item, index)=>
+                      <View key={index} style={{borderRadius:3, padding:5, paddingHorizontal:10, marginRight:8, marginBottom: 8, backgroundColor:'rgb(237,238,235)'}}>
+                          <Text style={{fontSize:18}}>{item}</Text>
+                      </View>
+                  )}
+                </View>
+              </View>
+          </ScrollView>
+          : null
+        }
+
+       </View>
     )
   }
 }
 
 // define your styles
 const styles = StyleSheet.create({
+  absolute:{
+    position: "absolute",
+    top: 0, left: 0, bottom: 0, right: 0,
+  },
   textSize: {
     fontSize: 18,
     fontWeight: 'bold',
