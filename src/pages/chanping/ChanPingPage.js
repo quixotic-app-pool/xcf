@@ -5,7 +5,7 @@
  * @Project: one_server
  * @Filename: ChanPing.js
  * @Last modified by:   mymac
- * @Last modified time: 2017-11-13T17:37:26+08:00
+ * @Last modified time: 2017-11-13T17:48:28+08:00
  */
 
  import React, { PureComponent } from 'react'
@@ -157,7 +157,6 @@
      return (
        <View>
          <ScrollView
-          stickyHeaderIndices={[0]}
           style={{backgroundColor:'white'}}>
             <View style={{height: 300}}>
               <Swiper activeDotColor='rgb(248,79,64)' dotStyle={{top: 20}} activeDotStyle={{top: 20}} showsButtons={false}>
