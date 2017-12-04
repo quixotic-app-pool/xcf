@@ -5,7 +5,7 @@
  * @Project: one_server
  * @Filename: RootScene.js
  * @Last modified by:   mymac
- * @Last modified time: 2017-11-14T09:32:46+08:00
+ * @Last modified time: 2017-12-04T10:34:33+08:00
  */
  //import liraries
  import React, { PureComponent } from 'react'
@@ -166,10 +166,29 @@
  //
  // );
 
+
+ // import HomePage from './pages/home/HomePage'
+ // import HaoWuPage from './pages/haowu/HaoWuPage'
+ // import PaiHangBangPage from './pages/paihangbang/PaiHangBangPage'
+ // import FenLeiPage from './pages/fenlei/FenLeiPage'
+ // import ShiJiPage from './pages/shiji/ShiJiPage'
+ // import ShouCangPage from './pages/shoucang/ShouCangPage'
+ // import RecipePage from './pages/recipe/RecipePage'
+ // import ChanPingPage from './pages/chanping/ChanPingPage'
+ // import MinePage from './pages/mine/MinePage'
+ //
  const Navigator = StackNavigator(
      {
          // Tab: { screen: Tab },
-         Home: { screen: HomePage },
+        //  Home: { screen: HomePage },
+        //  HaoWu: { screen: HaoWuPage },
+        //  PaiHangBang: { screen: PaiHangBangPage },
+        //  FenLei: { screen: FenLeiPage },
+        //  ShiJi: { screen: ShiJiPage },
+        //  ShouCang: { screen: ShouCangPage },
+        //  Recipe: { screen: RecipePage },
+        //  ChanPing: { screen: ChanPingPage },
+         Mine: { screen: MinePage },
         //  Web: { screen: WebScene },
         //  GroupPurchase: { screen: GroupPurchaseScene },
         //  Nearby: { screen: NearbyScene },
