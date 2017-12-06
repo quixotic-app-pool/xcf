@@ -5,7 +5,7 @@
  * @Project: one_server
  * @Filename: recipe.js
  * @Last modified by:   mymac
- * @Last modified time: 2017-11-13T12:15:37+08:00
+ * @Last modified time: 2017-12-06T11:33:32+08:00
  */
  import React, { PureComponent } from 'react'
  import { View, Text, Dimensions, TouchableOpacity, FlatList, StyleSheet, ScrollView, Image } from 'react-native'
@@ -18,34 +18,7 @@
  import { NavigationItem } from '../../widget'
 
  class RecipePage extends PureComponent {
-   static navigationOptions = ({ navigation }) => ({
-         headerRight: (
-           <View style={{ flexDirection: 'row' }}>
-               <NavigationItem
-                   iconStyle={{}}
-                   icon={require('./basket.png')}
-                   onPress={() => {
-
-                   }}
-               />
-           </View>
-         ),
-         headerLeft: (
-           <View style={{flexDirection:'row', left:20}}>
-           <NavigationItem
-               icon={require('./weixin.png')}
-               onPress={() => {
-               }}
-           />
-           <NavigationItem
-               icon={require('./qq.png')}
-               onPress={() => {
-               }}
-           />
-           </View>
-         ),
-         headerStyle: { backgroundColor: 'white'},
-     })
+   
 
    constructor() {
      super()

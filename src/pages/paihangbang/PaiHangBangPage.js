@@ -5,7 +5,7 @@
  * @Project: one_server
  * @Filename: PaiHangBangPage.js
  * @Last modified by:   mymac
- * @Last modified time: 2017-11-12T14:46:48+08:00
+ * @Last modified time: 2017-12-04T14:37:26+08:00
  */
  import React, { PureComponent } from 'react'
  import { View, Text, Dimensions, TouchableOpacity, FlatList, StyleSheet, ScrollView, Image } from 'react-native'
@@ -50,7 +50,7 @@ class PaiHangBangPage extends PureComponent {
     ]
     return (
       <ScrollView style={{ backgroundColor: 'white', padding: 15}}>
-        <View style={{paddingVertical:10, flexDirection:'row', justifyContent:'center'}}>
+        <View style={{width:screenWidth - 30, paddingVertical:10, flexDirection:'row', justifyContent:'center'}}>
           <View style={{padding: 5, flex:1, flexDirection: "row"}}>
             <Image style={{borderRadius:4, flex: 1, height: 150}} source={require('./temp3.jpeg')}/>
             <View style={{borderRadius:10, padding:4, marginLeft: 5, marginTop:-5, position: 'absolute', backgroundColor: 'rgb(244,176,38)'}}>
@@ -63,7 +63,7 @@ class PaiHangBangPage extends PureComponent {
           </View>
         </View>
 
-        <View style={{flexDirection:'row', justifyContent:'center'}}>
+        <View style={{width:screenWidth - 30, flexDirection:'row', justifyContent:'center'}}>
           <View style={{padding: 5, flex:1, flexDirection: "row"}}>
             <Image style={{borderRadius:4, flex: 1, height: 150}} source={require('./temp3.jpeg')}/>
             <View style={{borderRadius:10, padding:4, marginLeft: 5, marginTop:-5, position: 'absolute', backgroundColor: 'rgb(244,176,38)'}}>
@@ -76,7 +76,7 @@ class PaiHangBangPage extends PureComponent {
           </View>
         </View>
 
-        <View style={{paddingVertical:10,borderBottomWidth:1, borderColor: 'rgb(230,230,230)'}}>
+        <View style={{width:screenWidth - 30, paddingVertical:10,borderBottomWidth:1, borderColor: 'rgb(230,230,230)'}}>
           <View style={{flexDirection:'row', justifyContent:'center'}}>
             <View style={{padding: 5, flex:1, flexDirection: "row"}}>
               <Image style={{borderRadius:5,flex: 1, height: 100}} source={require('./temp3.jpeg')}/>

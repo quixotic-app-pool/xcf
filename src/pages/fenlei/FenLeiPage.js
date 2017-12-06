@@ -5,7 +5,7 @@
  * @Project: one_server
  * @Filename: FenLeiPage.js
  * @Last modified by:   mymac
- * @Last modified time: 2017-11-12T15:45:47+08:00
+ * @Last modified time: 2017-12-04T13:34:44+08:00
  */
  import React, { PureComponent } from 'react'
  import { View, Text, Dimensions, TouchableOpacity, StyleSheet, ScrollView, Image } from 'react-native'

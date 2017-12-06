@@ -5,7 +5,7 @@
  * @Project: one_server
  * @Filename: ShouCangPage.js
  * @Last modified by:   mymac
- * @Last modified time: 2017-11-12T19:15:49+08:00
+ * @Last modified time: 2017-12-04T18:11:29+08:00
  */
 
 
@@ -115,6 +115,7 @@
    constructor(){
      super()
      this._renderCell = this._renderCell.bind(this)
+     this._header = this._header.bind(this)
    }
    _renderCell(){
      return(
@@ -134,12 +135,20 @@
        </View>
      )
    }
+   _header() {
+     return (
+       <View>
+         <Text>it is header</Text>
+       </View>
+     )
+   }
    render(){
      return (
        <FlatList
         style={{backgroundColor: 'white', padding:20}}
         data={[{key: 'a'}, {key: 'b'},{key: 'c'}, {key: 'd'}, {key: 'e'}, {key: 'f'},{key: 'g'}, {key: 'h'}]}
-        renderItem={this._renderCell}
+        renderItem = {this._renderCell}
+        ListHeaderComponent = {this._header.bind(this)}
       />
      )
    }
