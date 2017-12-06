@@ -5,7 +5,7 @@
  * @Project: one_server
  * @Filename: RootScene.js
  * @Last modified by:   mymac
- * @Last modified time: 2017-12-06T12:06:24+08:00
+ * @Last modified time: 2017-12-06T12:43:13+08:00
  */
  //import liraries
  import React, { PureComponent } from 'react'
@@ -157,10 +157,10 @@
 
  const Navigator = StackNavigator(
      {
-        //  Tab: { screen: Tab },
+         Tab: { screen: Tab },
         //  Home: { screen: HomePage },
         //  HaoWu: { screen: HaoWuPage },
-         PaiHangBang: { screen: LogInPage },
+         PaiHangBang: { screen: PaiHangBangPage },
          FenLei: { screen: FenLeiPage },
          ShiJi: { screen: ShiJiPage },
          PureList: { screen: PureList },

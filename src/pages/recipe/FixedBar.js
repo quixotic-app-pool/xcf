@@ -5,7 +5,7 @@
  * @Project: one_server
  * @Filename: FixedBar.js
  * @Last modified by:   mymac
- * @Last modified time: 2017-11-13T17:18:11+08:00
+ * @Last modified time: 2017-12-06T13:42:56+08:00
  */
   import React, { PureComponent } from 'react'
   import {
@@ -33,12 +33,8 @@
                  <Text>收藏</Text>
                </View>
                <View style={{flexDirection:'row', alignItems:'center'}}>
-                 <Image style={{marginRight:5, width: 20, height:20}} source={require('./jiacaidan.png')}/>
-                 <Text>加菜单</Text>
-               </View>
-               <View style={{flexDirection:'row', alignItems:'center'}}>
                  <Image style={{marginRight:5, width: 20, height:20}} source={require('./chuanzuopin.png')}/>
-                 <Text>传作品</Text>
+                 <Text>咨询</Text>
                </View>
             </View>
           </View>

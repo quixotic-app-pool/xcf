@@ -5,7 +5,7 @@
  * @Project: one_server
  * @Filename: recipe.js
  * @Last modified by:   mymac
- * @Last modified time: 2017-12-06T11:33:32+08:00
+ * @Last modified time: 2017-12-06T13:43:47+08:00
  */
  import React, { PureComponent } from 'react'
  import { View, Text, Dimensions, TouchableOpacity, FlatList, StyleSheet, ScrollView, Image } from 'react-native'
@@ -18,17 +18,13 @@
  import { NavigationItem } from '../../widget'
 
  class RecipePage extends PureComponent {
-   
+
 
    constructor() {
      super()
      this._renderBody = this._renderBody.bind(this)
      this._renderRecipe = this._renderRecipe.bind(this)
      this._renderSteps = this._renderSteps.bind(this)
-     this._renderOther = this._renderOther.bind(this)
-     this._renderOtherCell = this._renderOtherCell.bind(this)
-     this._renderOtherRecipeCell = this._renderOtherRecipeCell.bind(this)
-     this._renderComments = this._renderComments.bind(this)
    }
    _renderRecipe() {
      var ingredientList =
@@ -86,158 +82,6 @@
        </View>
      )
    }
-   _renderOtherCell(item: Object) {
-     return (
-       <View style={{borderWidth:0.5, borderColor: 'rgb(230,230,230)', paddingVertical: 10, marginRight:10, flexDirection:'column', alignItems:'center', width: screenWidth/2 - 40}}>
-         <View style={{flex:1, flexDirection: "row"}}>
-           <Image style={{flex: 1, height: 100}} source={require('./temp5.jpg')}/>
-         </View>
-
-         <View style={{flexDirection:'column', padding:10,height:150}}>
-           <View style={{flexDirection:'row', alignItems:'center'}}>
-             <Image style={{borderRadius:10, width: 20, height:20}} source={require('./kim.jpeg')}/>
-             <Text style={{fontSize: 10, paddingLeft:10, opacity:0.5}}>宇宙大将军</Text>
-           </View>
-           <View style={{height: 100, alignItems:'center', justifyContent:'center'}}>
-            <Text style={{lineHeight:18, fontSize:14, opacity:0.8}}>超级好吃，炸出了鳞片，脆的一塌糊涂...</Text>
-          </View>
-           <View style={{flexDirection:'row', justifyContent:'space-between', alignItems:'center'}}>
-             <View style={{flexDirection:'row', alignItems:'center'}}>
-              <Image style={{width: 25, height: 25}} source={require('./like.png')}/>
-              <Text style={{fontSize: 10}}>  666</Text>
-             </View>
-             <Text style={{fontSize: 10, color: 'rgb(150,150,153)'}}>1小时前</Text>
-           </View>
-         </View>
-       </View>
-     )
-   }
-   _renderOther() {
-     var data1 = [
-       {key:'1', author: 'yanyanfoo', title: '发面大包：鲜汁肉&翡翠蔬菜', imgUrl: './temp1.jpeg', numOfJoin: '583'},
-       {key:'2', author: 'sandcastle', title: '芝麻瓜子仁酥糖&椰香杏仁酥糖', imgUrl: './temp1.jpeg', numOfJoin: '424'},
-       {key:'3', author: 'sandcastle', title: '芝麻瓜子仁酥糖&椰香杏仁酥糖', imgUrl: './temp1.jpeg', numOfJoin: '424'},
-       {key:'4', author: 'sandcastle', title: '芝麻瓜子仁酥糖&椰香杏仁酥糖', imgUrl: './temp1.jpeg', numOfJoin: '424'},
-       {key:'5', author: 'sandcastle', title: '芝麻瓜子仁酥糖&椰香杏仁酥糖', imgUrl: './temp1.jpeg', numOfJoin: '424'}
-     ]
-     return (
-       <View style={{borderTopWidth:0.5, borderTopColor: 'rgb(230,230,230)'}}>
-         <View style={{paddingTop:20, paddingBottom:10, flexDirection:'row', justifyContent:'space-between'}}>
-           <Text style={{fontSize: 16}}>大家做的这道菜</Text>
-           <Text style={{fontSize:15, color: 'rgb(249,79,64)'}}>所有作品</Text>
-         </View>
-         <FlatList horizontal={true} showsHorizontalScrollIndicator={false}
-           data={data1}
-           renderItem={this._renderOtherCell}
-         />
-       </View>
-     )
-   }
-   _renderComments() {
-     var comments = [
-       {key:'1', author: 'yanyanfoo', title: '发面大包：鲜汁肉&翡翠蔬菜', imgUrl: './temp1.jpeg', numOfJoin: '583'},
-       {key:'2', author: 'sandcastle', title: '芝麻瓜子仁酥糖&椰香杏仁酥糖', imgUrl: './temp1.jpeg', numOfJoin: '424'},
-       {key:'3', author: 'sandcastle', title: '芝麻瓜子仁酥糖&椰香杏仁酥糖', imgUrl: './temp1.jpeg', numOfJoin: '424'}
-     ]
-     return (
-       <View style={{borderTopWidth:0.5, borderTopColor: 'rgb(230,230,230)'}}>
-         <View style={{paddingTop:20, paddingBottom:10, flexDirection:'row', justifyContent:'space-between'}}>
-           <Text style={{fontSize: 16}}>这道菜的留言</Text>
-           <Text style={{fontSize:15, color: 'rgb(249,79,64)'}}>153条留言</Text>
-         </View>
-         <View>
-          {comments.map((item, index)=>
-            <View key={index} style={{paddingVertical:10, borderBottomWidth:0.5, borderBottomColor: 'rgb(230,230,230)'}}>
-              <View style={{flexDirection:'row', justifyContent:'space-between'}}>
-                <View style={{flexDirection:'row', alignItems:'center', justifyContent:'space-between'}}>
-                  <Image style={{borderRadius:15, width: 30, height:30}} source={require('./kim.jpeg')}/>
-                  <Text style={{fontSize: 10, paddingLeft:10, opacity:0.5}}>宇宙大将军</Text>
-                </View>
-                <View style={{flexDirection:'row', justifyContent:'center'}}>
-                  <Image style={{width: 25, height: 25}} source={require('./like.png')}/>
-                  <Text style={{fontSize: 10}}>666</Text>
-                </View>
-              </View>
-
-              <View style={{paddingVertical:10}}>
-                <Text style={{fontSize:12, opacity:0.8, lineHeight:14}}>老师，你好！如果没有微波炉，用电池炉加热玉米油油温要多少度合适呢？</Text>
-                <View style={{flexDirection:'row', paddingVertical:5}}>
-                  <Text  style={{fontSize:10, opacity:0.5}}>2018-2-11</Text><Text  style={{fontSize:10, opacity:0.8}}> · 举报</Text>
-                </View>
-              </View>
-
-              <View>
-                <View style={{flexDirection:'row'}}>
-                  <Text  style={{fontSize:12, opacity:0.8, lineHeight:14, color: 'rgb(233,140,58)'}}>作者的回复：</Text>
-                  <Text  style={{fontSize:12, opacity:0.8, lineHeight:14}}>按方子操作不会失败</Text>
-                </View>
-                <Text  style={{paddingVertical:10, fontSize:10, opacity:0.5}}>2018-2-21</Text>
-              </View>
-            </View>
-          )}
-         </View>
-       </View>
-     )
-   }
-   _renderOtherRecipeCell(item: Object) {
-     return (
-       <View style={{paddingVertical: 10, flexDirection:'column', width: screenWidth - 50}}>
-         <View style={{paddingRight: 10, flex:1, flexDirection: "row"}}>
-           <Image style={{flex: 1, height: 200}} source={require('./temp5.jpg')}/>
-         </View>
-
-         <View style={{paddingTop: 10, paddingHorizontal: 5, flexDirection:'row', justifyContent:'space-between'}}>
-           <View style={{justifyContent:'center'}}>
-             <Text style={{fontSize: 15}}>白菜炒木耳</Text>
-             <Text style={{paddingTop:10, fontSize: 10, color: 'rgb(150,150,153)'}}>22人做过</Text>
-           </View>
-           <View style={{alignItems:'center'}}>
-             <Image style={{borderRadius:18, width: 36, height:36}} source={require('./kim.jpeg')}/>
-             <Text style={{paddingTop:5, fontSize: 10, paddingLeft:10, opacity:0.5}}>宇宙大将军</Text>
-           </View>
-         </View>
-       </View>
-     )
-   }
-   _renderOtherRecipe() {
-     var data1 = [
-       {key:'1', author: 'yanyanfoo', title: '发面大包：鲜汁肉&翡翠蔬菜', imgUrl: './temp1.jpeg', numOfJoin: '583'},
-       {key:'2', author: 'sandcastle', title: '芝麻瓜子仁酥糖&椰香杏仁酥糖', imgUrl: './temp1.jpeg', numOfJoin: '424'},
-       {key:'3', author: 'sandcastle', title: '芝麻瓜子仁酥糖&椰香杏仁酥糖', imgUrl: './temp1.jpeg', numOfJoin: '424'},
-       {key:'4', author: 'sandcastle', title: '芝麻瓜子仁酥糖&椰香杏仁酥糖', imgUrl: './temp1.jpeg', numOfJoin: '424'},
-       {key:'5', author: 'sandcastle', title: '芝麻瓜子仁酥糖&椰香杏仁酥糖', imgUrl: './temp1.jpeg', numOfJoin: '424'}
-     ]
-     return (
-       <View style={{borderTopWidth:0.5, borderTopColor: 'rgb(230,230,230)'}}>
-         <View style={{paddingTop:20, paddingBottom:10}}>
-           <Text style={{fontSize: 16}}>作者其他菜谱</Text>
-         </View>
-         <FlatList horizontal={true} showsHorizontalScrollIndicator={false}
-           data={data1}
-           renderItem={this._renderOtherRecipeCell}
-         />
-       </View>
-     )
-   }
-   _renderAddedRecipe() {
-     var data = [{},{}]
-     return (
-       <View style={{borderTopWidth:0.5, borderTopColor: 'rgb(230,230,230)'}}>
-         <View style={{paddingTop:20, paddingBottom:10}}>
-           <Text style={{fontSize: 16}}>被加入的菜单</Text>
-         </View>
-         {data.map((item, index)=>
-            <View key={index} style={{flexDirection:'row', paddingVertical:10}}>
-              <Image style={{width: (screenWidth-40)/2, height: 100}} source={require('./temp5.jpg')} />
-              <View style={{paddingLeft:10, justifyContent:'center',width: (screenWidth-40)/2}}>
-                <Text style={{fontWeight:'bold',fontSize: 16}}>实践美食</Text>
-                <Text style={{paddingTop:20, fontSize:12, opacity:0.8}}>5道菜谱</Text>
-              </View>
-            </View>
-         )}
-       </View>
-     )
-   }
    _renderBody() {
      return (
        <View style={{padding:20}}>
@@ -270,7 +114,7 @@
             {this._renderRecipe()}
           </View>
 
-          <RaisedTextButton onPress={()=>{}} style={{marginVertical:20, height:40}} rippleDuration={600} rippleOpacity={0.54} title='一键买齐'   color='rgb(249,79,64)' titleColor='white' />
+          <RaisedTextButton onPress={()=>{}} style={{marginVertical:20, height:40}} rippleDuration={600} rippleOpacity={0.54} title='收藏'   color='rgb(249,79,64)' titleColor='white' />
 
           <View>
             {this._renderSteps()}
@@ -288,21 +132,6 @@
             <Text style={{fontSize:10, opacity:0.6}}>菜谱创建于2014-08-16</Text>
           </View>
 
-          <View>
-            {this._renderOther()}
-          </View>
-
-          <View>
-            {this._renderComments()}
-          </View>
-
-          <View>
-            {this._renderOtherRecipe()}
-          </View>
-
-          <View>
-            {this._renderAddedRecipe()}
-          </View>
           <View style={{paddingVertical:30}}></View>
        </View>
      )

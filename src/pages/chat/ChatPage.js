@@ -5,7 +5,7 @@
  * @Project: one_server
  * @Filename: App.js
  * @Last modified by:   mymac
- * @Last modified time: 2017-12-04T15:50:36+08:00
+ * @Last modified time: 2017-12-06T17:28:59+08:00
  */
 
 
@@ -16,10 +16,13 @@ import {
   Text,
   View,
 } from 'react-native';
+import SocketIOClient from 'socket.io-client';
 
 import {GiftedChat, Actions, Bubble, SystemMessage} from './src/src';
 import CustomActions from './src/CustomActions';
 import CustomView from './src/CustomView';
+
+const USER_ID = '@userId';
 
 export default class ChatPage extends React.Component {
   constructor(props) {
@@ -29,6 +32,7 @@ export default class ChatPage extends React.Component {
       loadEarlier: true,
       typingText: null,
       isLoadingEarlier: false,
+      userId: null
     };
 
     this._isMounted = false;
@@ -41,6 +45,11 @@ export default class ChatPage extends React.Component {
     this.onLoadEarlier = this.onLoadEarlier.bind(this);
 
     this._isAlright = null;
+
+    this.socket = SocketIOClient('http://localhost:3000');
+    this.socket.on('message', this.onReceive);
+    this.determineUser();
+
   }
 
   componentWillMount() {
@@ -54,6 +63,29 @@ export default class ChatPage extends React.Component {
 
   componentWillUnmount() {
     this._isMounted = false;
+  }
+  /**
+    * When a user joins the chatroom, check if they are an existing user.
+    * If they aren't, then ask the server for a userId.
+    * Set the userId to the component's state.
+    */
+
+  determineUser() {
+  AsyncStorage.getItem(USER_ID)
+    .then((userId) => {
+      // If there isn't a stored userId, then fetch one from the server.
+      if (!userId) {
+        this.socket.emit('userJoined', null);
+        this.socket.on('userJoined', (userId) => {
+          AsyncStorage.setItem(USER_ID, userId);
+          this.setState({ userId });
+        });
+      } else {
+        this.socket.emit('userJoined', userId);
+        this.setState({ userId });
+      }
+    })
+    .catch((e) => alert(e));
   }
 
   onLoadEarlier() {
@@ -82,7 +114,7 @@ export default class ChatPage extends React.Component {
         messages: GiftedChat.append(previousState.messages, messages),
       };
     });
-
+    this.socket.emit('message', messages[0]);
     // for demo purpose
     this.answerDemo(messages);
   }
@@ -213,6 +245,7 @@ export default class ChatPage extends React.Component {
   }
 
   render() {
+    var user = { _id: this.state.userId || -1 };
     return (
       <GiftedChat
         messages={this.state.messages}
@@ -222,7 +255,7 @@ export default class ChatPage extends React.Component {
         isLoadingEarlier={this.state.isLoadingEarlier}
 
         user={{
-          _id: 1, // sent messages should have same user._id
+          _id: user, // sent messages should have same user._id
         }}
 
         renderActions={this.renderCustomActions}

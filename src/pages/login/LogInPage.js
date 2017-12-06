@@ -5,7 +5,7 @@
  * @Project: one_server
  * @Filename: JiazhangScene.js
  * @Last modified by:   mymac
- * @Last modified time: 2017-12-06T12:36:36+08:00
+ * @Last modified time: 2017-12-06T12:56:25+08:00
  */
 
   //import liraries
@@ -36,6 +36,7 @@
         }
       verify() {
         //verify and record user
+        this.props.onPress()
       }
       sendMsg() {
         //send verification code message to user

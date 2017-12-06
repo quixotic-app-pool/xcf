@@ -5,27 +5,17 @@
  * @Project: one_server
  * @Filename: ChatList.js
  * @Last modified by:   mymac
- * @Last modified time: 2017-12-04T15:10:48+08:00
+ * @Last modified time: 2017-12-06T13:31:30+08:00
  */
 
-
- /**
-  * @Author: MichaelChen <mymac>
-  * @Date:   2017-11-12T16:30:46+08:00
-  * @Email:  teacherincafe@163.com
-  * @Project: one_server
-  * @Filename: ShiJiPage.js
- * @Last modified by:   mymac
- * @Last modified time: 2017-12-04T15:10:48+08:00
-  */
-
   import React, { PureComponent } from 'react'
-  import { Alert, StatusBar, View, Text, Dimensions, TouchableOpacity, FlatList, StyleSheet, ScrollView, Image } from 'react-native'
+  import { RefreshControl, Alert, StatusBar, View, Text, Dimensions, TouchableOpacity, FlatList, StyleSheet, ScrollView, Image } from 'react-native'
   import Icon from 'react-native-vector-icons/Ionicons'
 
   const screenHeight = Dimensions.get('window').height
   const screenWidth = Dimensions.get('window').width
   import { NavigationItem } from '../../widget'
+  import LogIn from '../login/LogInPage'
 
   class ChatList extends PureComponent {
 
@@ -38,6 +28,10 @@
           headerStyle: { backgroundColor: 'white'},
       })
 
+    state = {
+       loggedIn: true,
+       refreshing: false
+     };
     constructor(){
       super()
       this._renderListCell = this._renderListCell.bind(this)
@@ -63,16 +57,30 @@
         </TouchableOpacity>
       )
     }
-
+    confirmLogIn() {
+      this.setState({loggedIn: true})
+    }
+    _onFreshing() {
+      Alert.alert('on refreshing...')
+    }
     render(){
       var latestSearch = ['快手菜','下饭菜', '家常菜']
       return (
         <View style={{backgroundColor:'white', height: screenHeight}}>
-          <FlatList
-           data={[{key: 'a'}, {key: 'b'},{key: 'c'},{key: 'd'},{key: 'e'}, {key: 'f'},{key: 'g'},{key: 'h'}]}
-           style={{padding:10,backgroundColor:'white'}}
-           renderItem={this._renderListCell}
-         />
+          {this.state.loggedIn ?
+            <FlatList
+            refreshControl={
+                 <RefreshControl
+                     refreshing={this.state.refreshing}
+                     onRefresh={this._onFreshing.bind(this)}
+                     tintColor='gray'
+                 />
+             }
+             data={[{key: 'a'}, {key: 'b'},{key: 'c'},{key: 'd'},{key: 'e'}, {key: 'f'},{key: 'g'},{key: 'h'}]}
+             style={{padding:10,backgroundColor:'white'}}
+             renderItem={this._renderListCell}
+           /> : <LogIn onPress={this.confirmLogIn.bind(this)}/>
+          }
         </View>
 
       )

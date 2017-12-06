@@ -5,11 +5,11 @@
  * @Project: one_server
  * @Filename: PureList.js
  * @Last modified by:   mymac
- * @Last modified time: 2017-12-04T18:43:14+08:00
+ * @Last modified time: 2017-12-06T13:00:10+08:00
  */
 
  import React, { PureComponent } from 'react'
- import { View, Text, Dimensions, TouchableOpacity, FlatList, StyleSheet, Image } from 'react-native'
+ import { View, Text, Dimensions, StatusBar, TouchableOpacity, FlatList, StyleSheet, Image } from 'react-native'
 
 
  const screenWidth = Dimensions.get('window').width
@@ -21,9 +21,13 @@
      this._renderCell = this._renderCell.bind(this)
      this._header = this._header.bind(this)
    }
+   goItem() {
+     StatusBar.setBarStyle('default', false)
+     this.props.navigation.navigate('Recipe', { info: {} })
+   }
    _renderCell(){
      return(
-       <View style={{paddingBottom: 20, flexDirection:'row', width:screenWidth-40, justifyContent:'space-between'}}>
+       <TouchableOpacity onPress={this.goItem.bind(this)} style={{paddingBottom: 20, flexDirection:'row', width:screenWidth-40, justifyContent:'space-between'}}>
           <View style={{}}>
             <Image style={{width:(screenWidth-50)/2, height:100}} source={require('./temp1.jpeg')} />
             <View style={{width:(screenWidth - 50)/2, height:100, flexDirection:'row', alignItems:'flex-start',justifyContent:'flex-start', position: 'absolute'}}>
@@ -36,10 +40,11 @@
             <Text style={{paddingVertical:10, fontSize:12, fontWeight:'100', opacity:0.5}}>小云宝妈</Text>
             <Text style={{fontSize:12, fontWeight:'100'}}>7.9分 143人做过</Text>
           </View>
-       </View>
+       </TouchableOpacity>
      )
    }
    _header() {
+    //  ListHeaderComponent = {this._header.bind(this)}
      return (
        <View>
          <Text>it is header</Text>
@@ -52,7 +57,6 @@
         style={{backgroundColor: 'white', padding:20}}
         data={[{key: 'a'}, {key: 'b'},{key: 'c'}, {key: 'd'}, {key: 'e'}, {key: 'f'},{key: 'g'}, {key: 'h'}]}
         renderItem = {this._renderCell}
-        ListHeaderComponent = {this._header.bind(this)}
       />
      )
    }
