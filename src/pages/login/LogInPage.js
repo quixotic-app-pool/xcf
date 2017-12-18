@@ -5,12 +5,12 @@
  * @Project: one_server
  * @Filename: JiazhangScene.js
  * @Last modified by:   mymac
- * @Last modified time: 2017-12-06T12:56:25+08:00
+ * @Last modified time: 2017-12-17T11:25:55+08:00
  */
 
   //import liraries
   import React, { PureComponent } from 'react'
-  import { View, Text, Dimensions, StyleSheet, TouchableOpacity, Alert } from 'react-native'
+  import { AsyncStorage, View, Text, Dimensions, StyleSheet, TouchableOpacity, Alert } from 'react-native'
   import { TextField } from 'react-native-material-textfield';
   import { RaisedTextButton } from '../../widget/react-native-material-buttons';
   import CountdownCircle from 'react-native-countdown-circle'
@@ -28,6 +28,7 @@
 
       state = {
          phone: '',
+         veriCode: '',
          messageSent: false
        };
 
@@ -36,14 +37,74 @@
         }
       verify() {
         //verify and record user
-        this.props.onPress()
+        try {
+          console.log('verifing request sending...:' + this.state.veriCode);
+          var number = AsyncStorage.getItem(this.state.phone)
+          var param = { sixdigitcode: this.state.veriCode, number: number }
+          if(param.sixdigitcode.length !== 6) {
+            alert('请输入正确格式的验证码')
+            return
+          }
+          var self = this
+          fetch('http://localhost:8080/api/verify', {
+                method: 'POST',
+                headers: {
+                  'Accept': 'application/json',
+                  'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(param)
+            }).then(function(response) {
+                //获取数据,数据处理
+                console.log('get server response when asking for verification:' + JSON.stringify(response));
+                if(response.body.err === 0) {
+                  alert('电话号码不正确')
+                } else if(response.body.err === 1) {
+                  alert('验证码不正确')
+                } else {
+                  this.props.onPress()
+                }
+
+            });
+        } catch(e) {
+               //捕获异常消息
+        }
       }
       sendMsg() {
         //send verification code message to user
-        this.setState({messageSent: true})
+        try {
+          console.log('verifing request sending...:' + this.state.phone);
+          var param = { number: this.state.phone }
+          if(param.number.length !== 11) {
+            alert('请输入正确手机号码')
+            return
+          }
+          var self = this
+          fetch('http://localhost:8080/api/requestcode', {
+                method: 'POST',
+                headers: {
+                  'Accept': 'application/json',
+                  'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(param)
+            }).then( async function(response) {
+                //获取数据,数据处理
+                console.log('get server response when asking for code: ' + JSON.stringify(response));
+                // here we get user_id
+                // if(response)
+                try {
+                  await AsyncStorage.setItem('USER_ID', param.number)
+                  self.setState({messageSent: true})
+                } catch (e) {
+
+                }
+
+            });
+        } catch(e) {
+               //捕获异常消息
+        }
       }
       render() {
-        let { phone } = this.state;
+        let { phone, veriCode} = this.state;
 
           return (
               <View style={styles.container}>
@@ -56,8 +117,8 @@
                   <TextField
                     containerStyle={{flex:2}}
                     label='请输入手机收到的验证码'
-                    value={phone}
-                    onChangeText={ (phone) => this.setState({ phone }) }
+                    value={veriCode}
+                    onChangeText={ (veriCode) => this.setState({ veriCode }) }
                   />
                   <View style={{flex: 1, flexDirection: 'row', justifyContent: 'center', alignItems: 'center'}}>
                     {this.state.messageSent ?

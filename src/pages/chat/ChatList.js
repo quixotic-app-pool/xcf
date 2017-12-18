@@ -5,7 +5,7 @@
  * @Project: one_server
  * @Filename: ChatList.js
  * @Last modified by:   mymac
- * @Last modified time: 2017-12-06T13:31:30+08:00
+ * @Last modified time: 2017-12-07T17:40:20+08:00
  */
 
   import React, { PureComponent } from 'react'

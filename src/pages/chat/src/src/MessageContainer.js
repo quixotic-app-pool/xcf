@@ -5,7 +5,7 @@
  * @Project: one_server
  * @Filename: MessageContainer.js
  * @Last modified by:   mymac
- * @Last modified time: 2017-11-18T15:39:12+08:00
+ * @Last modified time: 2017-12-17T13:07:02+08:00
  */
 
 
@@ -51,6 +51,7 @@ export default class MessageContainer extends React.Component {
   }
 
   prepareMessages(messages) {
+    console.log("id not found: " + JSON.stringify(messages));
     return {
       keys: messages.map(m => m._id),
       blob: messages.reduce((o, m, i) => {
@@ -119,14 +120,22 @@ export default class MessageContainer extends React.Component {
   }
 
   renderRow(message, sectionId, rowId) {
+    console.log('what the hell message looks like: ' + JSON.stringify(message));
     if (!message._id && message._id !== 0) {
       console.warn('GiftedChat: `_id` is missing for message', JSON.stringify(message));
     }
     if (!message.user) {
-      if (!message.system) {
-        console.warn("GiftedChat: `user` is missing for message", JSON.stringify(message));
+      //suppress
+      // if (!message.system) {
+      //   console.warn("GiftedChat: `user` is missing for message", JSON.stringify(message));
+      // }
+      // to mock the library, I hack some data here
+      if(message.from === 'cs') {
+        message.user = {_id: '123', name: 'customer service'};
+      } else {
+        message.user = {_id: '123', name: 'Y'};
       }
-      message.user = {};
+
     }
 
     const messageProps = {
@@ -135,7 +144,9 @@ export default class MessageContainer extends React.Component {
       currentMessage: message,
       previousMessage: message.previousMessage,
       nextMessage: message.nextMessage,
-      position: message.user._id === this.props.user._id ? 'right' : 'left',
+      position: message.from === 'cs' ? 'left' : 'right',
+      //suppress
+      // position: message.user._id === this.props.user._id ? 'right' : 'left',
     };
 
     if (this.props.renderMessage) {

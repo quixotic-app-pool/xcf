@@ -5,7 +5,7 @@
  * @Project: one_server
  * @Filename: RootScene.js
  * @Last modified by:   mymac
- * @Last modified time: 2017-12-06T12:43:13+08:00
+ * @Last modified time: 2017-12-07T16:01:37+08:00
  */
  //import liraries
  import React, { PureComponent } from 'react'
@@ -32,8 +32,9 @@
  import RecipePage from './pages/recipe/RecipePage'
  import ChanPingPage from './pages/chanping/ChanPingPage'
  import MinePage from './pages/mine/MinePage'
- import ChatList from './pages/chat/ChatList'
+ // import ChatList from './pages/chat/ChatList'
  import ChatPage from './pages/chat/ChatPage'
+ import Chat from './pages/chat/Chat'
  import LogInPage from './pages/login/LogInPage'
  // import NearbyScene from './scene/Nearby/NearbyScene'
  // import MessageScene from './scene/Message/MessageScene'
@@ -111,7 +112,7 @@
              }),
          },
          Chat: {
-             screen: ChatList,
+             screen: Chat,
              navigationOptions: ({ navigation }) => ({
                  tabBarLabel: '消息',
                  tabBarIcon: ({ focused, tintColor }) => (
@@ -160,7 +161,7 @@
          Tab: { screen: Tab },
         //  Home: { screen: HomePage },
         //  HaoWu: { screen: HaoWuPage },
-         PaiHangBang: { screen: PaiHangBangPage },
+         PaiHangBang: { screen: Chat },
          FenLei: { screen: FenLeiPage },
          ShiJi: { screen: ShiJiPage },
          PureList: { screen: PureList },
