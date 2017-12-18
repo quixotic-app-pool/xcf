@@ -5,7 +5,7 @@
  * @Project: one_server
  * @Filename: ChatList.js
  * @Last modified by:   mymac
- * @Last modified time: 2017-12-07T17:40:20+08:00
+ * @Last modified time: 2017-12-18T16:29:35+08:00
  */
 
   import React, { PureComponent } from 'react'
@@ -38,7 +38,7 @@
       this.goChat = this.goChat.bind(this)
     }
     goChat(info: Object) {
-        StatusBar.setBarStyle('default', false)
+        // StatusBar.setBarStyle('default', false)
         this.props.navigation.navigate('ChatScreen', { info: {} })
     }
     _renderListCell(item, index) {

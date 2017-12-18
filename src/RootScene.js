@@ -5,7 +5,7 @@
  * @Project: one_server
  * @Filename: RootScene.js
  * @Last modified by:   mymac
- * @Last modified time: 2017-12-07T16:01:37+08:00
+ * @Last modified time: 2017-12-18T18:02:50+08:00
  */
  //import liraries
  import React, { PureComponent } from 'react'
@@ -70,8 +70,7 @@
  class RootScene extends PureComponent {
      constructor() {
          super()
-
-         StatusBar.setBarStyle('dark-content')
+         StatusBar.setBarStyle('light-content')
      }
 
      render() {
@@ -81,13 +80,13 @@
                      (prevState, currentState) => {
                          const currentScene = getCurrentRouteName(currentState);
                          const previousScene = getCurrentRouteName(prevState);
-                         if (previousScene !== currentScene) {
-                             if (lightContentScenes.indexOf(currentScene) >= 0) {
-                                 StatusBar.setBarStyle('light-content')
-                             } else {
-                                 StatusBar.setBarStyle('dark-content')
-                             }
-                         }
+                        //  if (previousScene !== currentScene) {
+                        //      if (lightContentScenes.indexOf(currentScene) >= 0) {
+                        //          StatusBar.setBarStyle('light-content')
+                        //      } else {
+                        //          StatusBar.setBarStyle('dark-content')
+                        //      }
+                        //  }
                      }
                  }
              />
@@ -149,8 +148,8 @@
          lazy: true,
          tabBarOptions: {
              activeTintColor: '#00abff',
-             inactiveTintColor: '#979797',
-             style: { backgroundColor: '#ffffff' },
+             inactiveTintColor: '#ffffff',
+             style: { backgroundColor: '#FFD700' },
          },
      }
 
@@ -184,9 +183,9 @@
      },
      {
          navigationOptions: {
-             // headerStyle: { backgroundColor: color.theme }
+             headerStyle: { backgroundColor: '#FFD700' },
              headerBackTitle: null,
-             headerTintColor: '#333333',
+             headerTintColor: '#ffffff',
              showIcon: true,
          },
      }

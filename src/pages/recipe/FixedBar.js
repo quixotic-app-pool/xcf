@@ -5,7 +5,7 @@
  * @Project: one_server
  * @Filename: FixedBar.js
  * @Last modified by:   mymac
- * @Last modified time: 2017-12-06T13:42:56+08:00
+ * @Last modified time: 2017-12-18T18:06:18+08:00
  */
   import React, { PureComponent } from 'react'
   import {
@@ -13,7 +13,9 @@
     Text,
     StyleSheet,
     Dimensions,
-    Image
+    Image,
+    TouchableOpacity,
+    AsyncStorage
   } from 'react-native'
   import Icon from 'react-native-vector-icons/Ionicons'
   import px2dp from './px2dp'
@@ -22,20 +24,33 @@
   export default class FixedBar extends PureComponent{
       constructor(props){
         super(props)
+        this.addFavorite = this.addFavorite.bind(this)
+        this.goAsk = this.goAsk.bind(this)
+      }
+      async addFavorite() {
+        var userId = AsyncStorage.getItem('USER_ID')
+        await fetch('http://localhost:3000/api/addFavorite?userId=' + userId + '&recipeId=' + this.props.recipeId)
+               .then(function(response) {
+                 //获取数据,数据处理
+                 console.log('get server response when adding favorite:' + JSON.stringify(response));
+               });
+      }
+      goAsk() {
+         this.props.navigate()
       }
       render(){
         let { list, lens } = this.props
         return (
           <View style={styles.cartView}>
             <View style={{flexDirection:'row', justifyContent:'space-around'}}>
-               <View style={{flexDirection:'row', alignItems:'center'}}>
+               <TouchableOpacity onPress={this.addFavorite} style={{flexDirection:'row', alignItems:'center'}}>
                  <Image style={{marginRight:5, width: 20, height:20}} source={require('./shoucang.png')}/>
                  <Text>收藏</Text>
-               </View>
-               <View style={{flexDirection:'row', alignItems:'center'}}>
-                 <Image style={{marginRight:5, width: 20, height:20}} source={require('./chuanzuopin.png')}/>
+               </TouchableOpacity>
+               <TouchableOpacity onPress={this.goAsk} style={{flexDirection:'row', alignItems:'center'}}>
+                 <Image style={{marginRight:5, width: 22, height:22}} source={require('./question.png')}/>
                  <Text>咨询</Text>
-               </View>
+               </TouchableOpacity>
             </View>
           </View>
         )

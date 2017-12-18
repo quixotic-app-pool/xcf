@@ -5,7 +5,7 @@
  * @Project: one_server
  * @Filename: Chat.js
  * @Last modified by:   mymac
- * @Last modified time: 2017-12-17T13:09:28+08:00
+ * @Last modified time: 2017-12-18T16:18:25+08:00
  */
 // https://stackoverflow.com/questions/35680565/sending-message-to-specific-client-in-socket-io
 // Chat Message
@@ -31,7 +31,7 @@
 //   // Any additional custom parameters are passed through
 // }
 
- import React from 'react';
+ import React, { PureComponent } from 'react';
  import { View, Text, AsyncStorage, Dimensions } from 'react-native';
  import SocketIOClient from 'socket.io-client';
  import { GiftedChat } from './src/src';
@@ -40,7 +40,11 @@
  const screenHeight = Dimensions.get('window').height
  const screenWidth = Dimensions.get('window').width
 
- class Main extends React.Component {
+ class Main extends PureComponent {
+
+   static navigationOptions = ({ navigation }) => ({
+        title: '联系客服'
+    });
 
    constructor(props) {
      super(props);

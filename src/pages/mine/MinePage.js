@@ -5,7 +5,7 @@
  * @Project: one_server
  * @Filename: MinePage.js
  * @Last modified by:   mymac
- * @Last modified time: 2017-12-06T13:36:21+08:00
+ * @Last modified time: 2017-12-18T16:29:41+08:00
  */
 
 
@@ -21,18 +21,14 @@
  export default class MinePage extends PureComponent {
 
    static navigationOptions = ({ navigation }) => ({
-         headerTitle: (
-             <TouchableOpacity>
-               <Text>我</Text>
-             </TouchableOpacity>
-         ),
-         headerStyle: { backgroundColor: 'white'},
-     })
+        title: navigation.state.params ? navigation.state.params.title : '加载中',
+    });
 
    state = {
       loggedIn: true,
       selected: 0,
-      refreshing: false
+      refreshing: false,
+      pageNum: 0
     };
 
    constructor() {
@@ -40,22 +36,33 @@
      this.chooseTopic = this.chooseTopic.bind(this)
      this.goItem = this.goItem.bind(this)
    }
-   chooseTopic(index) {
-      this.setState({selected: index, refreshing: true})
-      //simulate
-      setTimeout(() => {
-          this.setState({refreshing: false})
-      }, 1500);
+   async chooseTopic(index, pageNum) {
+      var self = this
+      self.setState({selected: index, refreshing: true})
+      if(pageNum === 0) {
+        self.setState({pageNum: 0})
+      }
+      self.props.navigation.setParams({ title: '加载中' })
+      //  var userId = AsyncStorage.getItem('USER_ID')
+      var userId = '13913351453'
+
+      await fetch('http://localhost:3000/api/fetchfavoriteorread?index=' + index + '&page=' + this.state.pageNum + '&userid=' + userId)
+             .then(function(response) {
+               //获取数据,数据处理
+               console.log('get server response when asking for list of favorite or read:' + JSON.stringify(response));
+               self.props.navigation.setParams({ title: '我' })
+               self.setState({refreshing: false, pageNum: self.state.pageNum + 1})
+             });
    }
    _header() {
      return (
        <View>
        <View style={{borderBottomWidth:0.5, borderColor:'rgb(230,230,230)',flexDirection:'row', justifyContent:'space-around'}}>
-         <TouchableOpacity onPress={() => this.chooseTopic(0)} style={[styles.top, this.state.selected === 0 ? styles.selected: null]}>
+         <TouchableOpacity onPress={() => this.chooseTopic(0, 0)} style={[styles.top, this.state.selected === 0 ? styles.selected: null]}>
            <Image style={{width:25, height:25}} source={require('./heart.png')} />
            <Text style={{paddingTop:10,fontSize:12, opacity:0.9}}>我的收藏</Text>
          </TouchableOpacity>
-         <TouchableOpacity onPress={() => this.chooseTopic(1)} style={[styles.top, this.state.selected === 1 ? styles.selected: null]}>
+         <TouchableOpacity onPress={() => this.chooseTopic(1, 0)} style={[styles.top, this.state.selected === 1 ? styles.selected: null]}>
            <Image style={{width:25, height:25}} source={require('./order.png')} />
            <Text style={{paddingTop:10,fontSize:12, opacity:0.9}}>已阅读</Text>
          </TouchableOpacity>
@@ -68,7 +75,7 @@
      )
    }
    goItem() {
-     StatusBar.setBarStyle('default', false)
+    //  StatusBar.setBarStyle('default', false)
      this.props.navigation.navigate('Recipe', { info: {} })
    }
    _renderCell(){
@@ -81,10 +88,8 @@
             </View>
           </View>
 
-          <View style={{width:(screenWidth-50)/2}}>
+          <View style={{width:(screenWidth-50)/2, flexDirection: 'column', justifyContent: 'center'}}>
             <Text style={{fontWeight:'bold', fontSize:18}}>精准配方，媲美周黑鸭的卤鸭脚！</Text>
-            <Text style={{paddingVertical:10, fontSize:12, fontWeight:'100', opacity:0.5}}>小云宝妈</Text>
-            <Text style={{fontSize:12, fontWeight:'100'}}>7.9分 143人做过</Text>
           </View>
        </TouchableOpacity>
      )
@@ -93,7 +98,10 @@
      this.setState({loggedIn: true})
    }
    _onFreshing() {
-     Alert.alert('on refreshing...')
+     this.chooseTopic(this.state.selected, 0)
+   }
+   _onReachEnd() {
+     this.chooseTopic(this.state.selected, this.state.pageNum)
    }
    render(){
      return (
@@ -111,6 +119,8 @@
               data={[{key: 'a'}, {key: 'b'},{key: 'c'}, {key: 'd'}, {key: 'e'}, {key: 'f'},{key: 'g'}, {key: 'h'}]}
               renderItem = {this._renderCell.bind(this)}
               ListHeaderComponent = {this._header.bind(this)}
+              onEndReached = {() => this._onReachEnd()}
+              onEndReachedThreshold = {0.2}
           /> : <LogIn onPress={this.confirmLogIn.bind(this)}/>
          }
        </View>

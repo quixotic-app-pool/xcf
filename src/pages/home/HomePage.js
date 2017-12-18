@@ -5,45 +5,30 @@
  * @Project: one_server
  * @Filename: HomePage.js
  * @Last modified by:   mymac
- * @Last modified time: 2017-12-06T11:38:14+08:00
+ * @Last modified time: 2017-12-18T17:30:38+08:00
  */
 
 import React, { PureComponent } from 'react'
-import { InteractionManager, StatusBar, View, Text, Alert, Dimensions, findNodeHandle,StyleSheet, TouchableOpacity, ScrollView, Image, FlatList } from 'react-native'
+import { RefreshControl, InteractionManager, StatusBar, View, Text, Alert, Dimensions, findNodeHandle,StyleSheet, TouchableOpacity, ScrollView, Image, FlatList } from 'react-native'
 import Icon from 'react-native-vector-icons/Ionicons'
-import Search from 'react-native-search-box';
-import { BlurView } from 'react-native-blur';
 import Modal from 'react-native-modalbox';
 
 import { NavigationItem } from '../../widget'
+Global = require('../../widget/Global')
 
 const screenWidth = Dimensions.get('window').width
 
 class HomePage extends PureComponent {
 
   static navigationOptions = ({ navigation }) => ({
-        headerLeft: (
-          <View style={{ width: screenWidth }}>
-            <Search
-              ref="search_box"
-              backgroundColor='white'
-              cancelButtonTextStyle={{color: 'black'}}
-              beforeFocus={()=>navigation.state.params.topItemActionFocus()}
-              onCancel={()=>navigation.state.params.topItemActionCancel()}
-              /**
-              * There many props that can customizable
-              * Please scroll down to Props section
-              */
-            />
-
-          </View>
-        ),
-        headerStyle: { backgroundColor: 'white'},
-    })
-
+       title: navigation.state.params ? navigation.state.params.title : '加载中',
+   });
 
   constructor() {
     super()
+    this.state = {
+      refreshing: true
+    }
     this._layer1 = this._layer1.bind(this)
     this._renderCell1 = this._renderCell1.bind(this)
     this._studioList = this._studioList.bind(this)
@@ -51,20 +36,31 @@ class HomePage extends PureComponent {
     this._shopSpecial = this._shopSpecial.bind(this)
     this._renderCell3 = this._renderCell3.bind(this)
     this._recipeRec = this._recipeRec.bind(this)
-    this._renderCell4 = this._renderCell4.bind(this)
-    this._chefActivity = this._chefActivity.bind(this)
     this.topItemActionFocus = this.topItemActionFocus.bind(this)
     this.topItemActionCancel = this.topItemActionCancel.bind(this)
-    this.state = { viewRef: null, toggle: false };
   }
   componentDidMount() {
-        this.props.navigation.setParams({ topItemActionFocus: this.topItemActionFocus, topItemActionCancel: this.topItemActionCancel })
-        // Workaround for a tricky race condition on initial load.
-        InteractionManager.runAfterInteractions(() => {
-          setTimeout(() => {
-            this.setState({ viewRef: findNodeHandle(this.refs.bluredView) });
-          }, 500);
-        });
+    Global.loggedIn = true
+    // StatusBar.setBarStyle('light-content', false)
+    InteractionManager.runAfterInteractions(() => {
+      this.props.navigation.setParams({ title: '加载中' })
+      this._fetchMainPageContent()
+    })
+  }
+  async _fetchMainPageContent() {
+    var self = this
+    self.props.navigation.setParams({ title: '加载中' })
+    self.setState({refreshing: true})
+    await fetch('http://localhost:3000/api/fetchmainpagecontent')
+           .then(function(response) {
+             //获取数据,数据处理
+             console.log('get server response when asking for list:' + JSON.stringify(response));
+             self.props.navigation.setParams({ title: '主页' })
+             self.setState({refreshing: false})
+           });
+  }
+  _refreshContent() {
+    this._fetchMainPageContent()
   }
   topItemActionFocus(){
       if(this.state.toggle == false){
@@ -78,14 +74,13 @@ class HomePage extends PureComponent {
       }
       return
   }
-  goOneCategory() {
-    StatusBar.setBarStyle('default', false)
-    this.props.navigation.navigate('PureList', { info: {} })
+  goOneCategory(type) {
+    this.props.navigation.navigate('PureList', { type: type })
   }
   _layer1() {
     return (
       <View style={{marginTop:20, flexDirection:'row', justifyContent:'center'}}>
-        <TouchableOpacity style={{ paddingRight:10, flexDirection: "row"}} onPress={this.goOneCategory.bind(this)}>
+        <TouchableOpacity style={{ paddingRight:10, flexDirection: "row"}} onPress={this.goOneCategory.bind(this, '本周流行菜谱')}>
           <Image style={{width: (screenWidth - 46 )/2, height: 100}} source={require('./temp1.jpeg')}/>
           <View style={{marginLeft: 20, marginTop:55, position: 'absolute', backgroundColor: 'transparent'}}>
             <Text style={styles.textSize}>本周</Text>
@@ -114,7 +109,7 @@ class HomePage extends PureComponent {
       <View>
         <View style={{paddingTop:20, flexDirection:'row', justifyContent:'space-between'}}>
           <Text style={{fontSize: 18}}>热门项目</Text>
-          <TouchableOpacity onPress={this.goOneCategory.bind(this)}>
+          <TouchableOpacity onPress={this.goOneCategory.bind(this, '热门项目')}>
             <Text style={{fontSize:15, color: 'rgb(150,150,153)'}}>查看全部</Text>
           </TouchableOpacity>
         </View>
@@ -125,19 +120,19 @@ class HomePage extends PureComponent {
       </View>
     )
   }
-  goItem() {
-    StatusBar.setBarStyle('default', false)
-    this.props.navigation.navigate('Recipe', { info: {} })
+  goItem(recipeId) {
+    // StatusBar.setBarStyle('default', false)
+    this.props.navigation.navigate('Recipe', { recipeId: recipeId })
   }
   _renderCell1(item: Object) {
     console.log(item.key)
     return (
-      <TouchableOpacity onPress={this.goItem.bind(this)} style={{paddingVertical: 10, flexDirection:'column', alignItems:'center', width: screenWidth/2 - 20}}>
+      <TouchableOpacity onPress={this.goItem.bind(this, item.id)} style={{paddingVertical: 10, flexDirection:'column', alignItems:'center', width: screenWidth/2 - 20}}>
         <View style={{paddingRight: 10, flex:1, flexDirection: "row"}}>
           <Image style={{flex: 1, height: 250}} source={require('./temp1.jpeg')}/>
           <View style={{marginLeft: 20, marginTop:200, position: 'absolute', backgroundColor: 'transparent'}}>
             <View style={{paddingVertical:2, width: 25, justifyContent:'center', flexDirection:'row', backgroundColor: '#FFD700', borderRadius:5}}>
-              <Text style={{fontSize:10}}>坐标成都</Text>
+              <Text style={{fontSize:10}}>成都特色</Text>
             </View>
             <Text style={styles.textSize}>经典名小吃...</Text>
           </View>
@@ -145,7 +140,6 @@ class HomePage extends PureComponent {
 
         <View style={{paddingRight: 10, paddingTop: 10}}>
           <Text style={{fontSize: 15}}>发面大包：鲜汁肉&翡翠蔬菜</Text>
-          <Text style={{fontSize: 10, color: 'rgb(150,150,153)'}}>522人参与</Text>
         </View>
       </TouchableOpacity>
     )
@@ -162,7 +156,7 @@ class HomePage extends PureComponent {
       <View>
         <View style={{paddingTop:20, flexDirection:'row', justifyContent:'space-between'}}>
           <Text style={{fontSize: 18}}>活动折扣</Text>
-          <TouchableOpacity onPress={this.goOneCategory.bind(this)}>
+          <TouchableOpacity onPress={this.goOneCategory.bind(this, '活动折扣')}>
             <Text style={{fontSize:15, color: 'rgb(150,150,153)'}}>查看全部</Text>
           </TouchableOpacity>
         </View>
@@ -175,7 +169,7 @@ class HomePage extends PureComponent {
   }
   _renderCell2(item: Object) {
     return (
-      <TouchableOpacity onPress={this.goItem.bind(this)} style={{paddingVertical: 10, flexDirection:'column', alignItems:'center', width: screenWidth/2 - 20}}>
+      <TouchableOpacity onPress={this.goItem.bind(this, item.id)} style={{paddingVertical: 10, flexDirection:'column', alignItems:'center', width: screenWidth/2 - 20}}>
         <View style={{paddingRight: 10, flex:1, flexDirection: "row"}}>
           <Image style={{flex: 1, height: 250}} source={require('./temp1.jpeg')}/>
           <View style={{marginLeft: 20, marginTop:200, position: 'absolute', backgroundColor: 'transparent'}}>
@@ -203,7 +197,7 @@ class HomePage extends PureComponent {
       <View>
         <View style={{paddingTop:20, flexDirection:'row', justifyContent:'space-between'}}>
           <Text style={{fontSize: 18}}>最新上架</Text>
-          <TouchableOpacity onPress={this.goOneCategory.bind(this)}>
+          <TouchableOpacity onPress={this.goOneCategory.bind(this, '最新上架')}>
             <Text style={{fontSize:15, color: 'rgb(150,150,153)'}}>查看全部</Text>
           </TouchableOpacity>
         </View>
@@ -217,7 +211,7 @@ class HomePage extends PureComponent {
 
   _renderCell3(item: Object) {
     return (
-      <TouchableOpacity onPress={this.goItem.bind(this)} style={{paddingVertical: 10, flexDirection:'column', alignItems:'center', width: screenWidth - 50}}>
+      <TouchableOpacity onPress={this.goItem.bind(this, item.id)} style={{paddingVertical: 10, flexDirection:'column', alignItems:'center', width: screenWidth - 50}}>
         <View style={{paddingRight: 10, flex:1, flexDirection: "row"}}>
           <Image style={{flex: 1, height: 250}} source={require('./temp1.jpeg')}/>
           <View style={{marginLeft: 20, marginTop:200, position: 'absolute', backgroundColor: 'transparent'}}>
@@ -230,107 +224,32 @@ class HomePage extends PureComponent {
       </TouchableOpacity>
     )
   }
-  _chefActivity() {
-    var data4 = [
-      {key:'1', author: 'yanyanfoo', title: '发面大包：鲜汁肉&翡翠蔬菜', imgUrl: './temp1.jpeg', numOfJoin: '583'},
-      {key:'2', author: 'sandcastle', title: '芝麻瓜子仁酥糖&椰香杏仁酥糖', imgUrl: './temp1.jpeg', numOfJoin: '424'},
-      {key:'3', author: 'sandcastle', title: '芝麻瓜子仁酥糖&椰香杏仁酥糖', imgUrl: './temp1.jpeg', numOfJoin: '424'},
-      {key:'4', author: 'sandcastle', title: '芝麻瓜子仁酥糖&椰香杏仁酥糖', imgUrl: './temp1.jpeg', numOfJoin: '424'},
-      {key:'5', author: 'sandcastle', title: '芝麻瓜子仁酥糖&椰香杏仁酥糖', imgUrl: './temp1.jpeg', numOfJoin: '424'}
-    ]
-    return (
-      <View>
-        <View style={{paddingTop:20, flexDirection:'row', justifyContent:'space-between'}}>
-          <Text style={{fontSize: 18}}>项目分类</Text>
-          <TouchableOpacity onPress={this.goOneCategory.bind(this)}>
-            <Text style={{fontSize:15, color: 'rgb(150,150,153)'}}>查看全部</Text>
-          </TouchableOpacity>
-        </View>
-        <FlatList horizontal={true} showsHorizontalScrollIndicator={false}
-          data={data4}
-          renderItem={this._renderCell4}
-        />
-      </View>
-    )
-  }
-  _renderCell4(item: Object) {
-    return (
-      <TouchableOpacity onPress={this.goItem.bind(this)} style={{paddingVertical: 10, flexDirection:'column', alignItems:'center', width: screenWidth/2 - 20}}>
-        <View style={{paddingRight: 10, flex:1, flexDirection: "row"}}>
-          <Image style={{flex: 1, height: 250}} source={require('./temp1.jpeg')}/>
-          <View style={{marginLeft: 20, marginTop:200, position: 'absolute', backgroundColor: 'transparent'}}>
-            <View style={{paddingVertical:2, width: 25, justifyContent:'center', flexDirection:'row', backgroundColor: '#FFD700', borderRadius:5}}>
-              <Text style={{fontSize:10}}>烘焙系列</Text>
-            </View>
-          </View>
-        </View>
-
-        <View style={{paddingRight: 10, paddingTop: 10}}>
-          <Text style={{fontSize: 15}}>免费申请韩国酱料，上传食谱赢好礼！</Text>
-        </View>
-      </TouchableOpacity>
-    )
-  }
   render() {
     var latestSearch = ['快手菜','下饭菜', '家常菜']
     var trend = ['蛋糕','红烧肉', '可乐鸡翅','蛋挞','家常菜', '面包','早餐','糖醋排骨',
                 '豆腐','牛肉','排骨', '茄子','南瓜饼','虾', '土豆','宫保鸡丁','披萨', '汤','蛋黄酥','南瓜']
     return (
-      <View ref={(view) => { this.bluredView = view }}>
-        <ScrollView contentContainerStyle={{backgroundColor: 'white', padding: 15}}>
+      <View style={{backgroundColor: '#ffffff'}}>
+        <ScrollView
+         refreshControl={
+              <RefreshControl
+                  onRefresh={() => this._refreshContent()}
+                  refreshing={this.state.refreshing}
+              />
+          }
+          contentContainerStyle={{backgroundColor: 'white', padding: 15}}>
           {this._layer1()}
-          {this._studioList()}
           {this._shopSpecial()}
+          {this._studioList()}
           {this._recipeRec()}
-          {this._chefActivity()}
         </ScrollView>
         <Modal style={[styles.modal, styles.modal4]} position={"center"} ref={"modal4"}>
-         <Text style={{}}>微信：XXXXX</Text>
-         <Text style={{}}>QQ：XXXXX</Text>
-         <Text style={{}}>电话：XXXXX</Text>
-         <Text style={{}}>小程序：XXXXX</Text>
-         <Text style={{}}>网站：XXXXX</Text>
-         <Text style={{}}>APP：XXXXX</Text>
+         <Text style={{fontWeight: 'bold', paddingBottom: 10}}>微信：flyinghawker</Text>
+         <Text style={{fontWeight: 'bold', paddingBottom: 10}}>QQ：775109338</Text>
+         <Text style={{fontWeight: 'bold', paddingBottom: 10}}>电话：13913351453</Text>
+         <Text style={{fontWeight: 'bold', paddingBottom: 10}}>小程序：《美食项目接不停》</Text>
+         <Text style={{fontWeight: 'bold', paddingBottom: 10}}>网站：www.gourmet.com</Text>
         </Modal>
-        {this.state.toggle && this.state.viewRef ?
-          <BlurView
-            style={styles.absolute}
-            viewRef={this.state.viewRef}
-            blurType="light"
-            blurRadius={20}
-            downsampleFactor={10}
-            overlayColor={'rgba(0, 0, 255, .6)'}   // set a blue overlay
-          /> : null
-        }
-        {this.state.toggle ?
-          <ScrollView style={styles.absolute} contentContainerStyle={{backgroundColor: 'transparent', padding: 15, paddingTop:20}}>
-              <View>
-                <View style={{paddingBottom:10, flexDirection:'row', justifyContent:'space-between'}}>
-                  <Text>最近搜索</Text>
-                  <Text>清空</Text>
-                </View>
-                <View style={{flexDirection:'row', flexWrap:'wrap'}}>
-                  {latestSearch.map((item, index)=>
-                      <View key={index} style={{borderRadius:3, padding:5, paddingHorizontal:10, marginRight:8, marginBottom: 8, backgroundColor:'rgb(237,238,235)'}}>
-                          <Text style={{fontSize:18}}>{item}</Text>
-                      </View>
-                  )}
-                </View>
-              </View>
-              <View style={{marginTop: 30}}>
-                <Text style={{paddingBottom:10, }}>流行搜索</Text>
-                <View style={{flexDirection:'row',flexWrap:'wrap'}}>
-                  {trend.map((item, index)=>
-                      <View key={index} style={{borderRadius:3, padding:5, paddingHorizontal:10, marginRight:8, marginBottom: 8, backgroundColor:'rgb(237,238,235)'}}>
-                          <Text style={{fontSize:18}}>{item}</Text>
-                      </View>
-                  )}
-                </View>
-              </View>
-          </ScrollView>
-          : null
-        }
-
        </View>
     )
   }

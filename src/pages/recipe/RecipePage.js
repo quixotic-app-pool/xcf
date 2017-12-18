@@ -5,26 +5,63 @@
  * @Project: one_server
  * @Filename: recipe.js
  * @Last modified by:   mymac
- * @Last modified time: 2017-12-06T13:43:47+08:00
+ * @Last modified time: 2017-12-18T18:06:04+08:00
  */
  import React, { PureComponent } from 'react'
  import { View, Text, Dimensions, TouchableOpacity, FlatList, StyleSheet, ScrollView, Image } from 'react-native'
  import Icon from 'react-native-vector-icons/Ionicons'
  import ParallaxScrollView from 'react-native-parallax-scroll-view';
  import { RaisedTextButton } from '../../widget/react-native-material-buttons';
+ import LogIn from '../login/LogInPage'
 
  const screenWidth = Dimensions.get('window').width
  import FixedBar from './FixedBar'
  import { NavigationItem } from '../../widget'
+ Global = require('../../widget/Global')
 
  class RecipePage extends PureComponent {
 
+   static navigationOptions = ({ navigation }) => ({
+        title: navigation.state.params ? navigation.state.params.title : '加载中',
+    });
 
    constructor() {
      super()
+     this.state = {
+       recipeId: ''
+     }
      this._renderBody = this._renderBody.bind(this)
      this._renderRecipe = this._renderRecipe.bind(this)
      this._renderSteps = this._renderSteps.bind(this)
+     this.confirmLogIn = this.confirmLogIn.bind(this)
+     this.navigateToChat = this.navigateToChat.bind(this)
+   }
+
+   componentDidMount() {
+     // StatusBar.setBarStyle('light-content', false)
+     this.props.navigation.setParams({ title: '加载中' })
+     this._fetchRecipe()
+   }
+   async _fetchRecipe() {
+     var self = this
+     self.props.navigation.setParams({ title: '加载中' })
+    //  console.log(JSON.stringify(self.props.navigation.state));
+    //  self.setState({refreshing: true})
+     var recipeId = self.props.navigation.state.params.recipeId
+     self.setState({recipeId})
+     await fetch('http://localhost:3000/api/fetchrecipe?id=' + recipeId)
+            .then(function(response) {
+              //获取数据,数据处理
+              console.log('get server response when asking for recipe:' + JSON.stringify(response));
+              self.props.navigation.setParams({ title: '狗不理包子' })
+              self.setState({refreshing: false})
+            });
+   }
+   confirmLogIn() {
+     this.setState({loggedIn: true})
+   }
+   navigateToChat() {
+     this.props.navigation.navigate('Chat', {})
    }
    _renderRecipe() {
      var ingredientList =
@@ -139,27 +176,32 @@
    render(){
      return (
        <View style={{flex: 1}}>
-         <ParallaxScrollView
-            style={{ flex: 1, backgroundColor: 'hotpink', overflow: 'hidden' }}
-            backgroundColor="white"
-            backgroundSpeed={5}
-            contentBackgroundColor="white"
-            fadeOutForeground={true}
-            parallaxHeaderHeight={300}
-            renderStickyHeader={()=>
-              <View key="sticky-header" style={styles.stickySection}>
-                  <Text style={styles.stickySectionText}>葡萄干玉米面发糕</Text>
-                </View>
-              }
-            stickyHeaderHeight={30}
-            renderBackground={()=><Image style={{width: screenWidth, height: 300}} source={require('./temp5.jpg')}/>}
-            renderFixedHeader={()=> <View key="fixed-header" style={styles.fixedSection}>
-                  <Image style={{marginTop:120, width:20, height: 20}} source={require('./up.png')}/>
-                </View>
-              }>
-              {this._renderBody()}
-          </ParallaxScrollView>
-          <FixedBar ref={"shopbar"} list={[]} lens={{}}/>
+         {Global.loggedIn ?
+            <View style={{flex: 1}}>
+              <ParallaxScrollView
+                style={{ flex: 1, backgroundColor: 'hotpink', overflow: 'hidden' }}
+                backgroundColor="white"
+                backgroundSpeed={5}
+                contentBackgroundColor="white"
+                fadeOutForeground={true}
+                parallaxHeaderHeight={300}
+                renderStickyHeader={()=>
+                  <View key="sticky-header" style={styles.stickySection}>
+                      <Text style={styles.stickySectionText}>葡萄干玉米面发糕</Text>
+                    </View>
+                  }
+                stickyHeaderHeight={30}
+                renderBackground={()=><Image style={{width: screenWidth, height: 300}} source={require('./temp5.jpg')}/>}
+                renderFixedHeader={()=> <View key="fixed-header" style={styles.fixedSection}>
+                      <Image style={{marginTop:120, width:20, height: 20}} source={require('./up.png')}/>
+                    </View>
+                  }>
+                  {this._renderBody()}
+              </ParallaxScrollView>
+              <FixedBar ref={"shopbar"} recipeId={this.state.recipeId} navigate={this.navigateToChat} list={[]} lens={{}}/>
+            </View>
+            : <LogIn onPress={this.confirmLogIn.bind(this)}/>
+          }
        </View>
      )
    }
