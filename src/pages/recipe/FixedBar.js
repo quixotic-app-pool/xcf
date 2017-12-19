@@ -5,7 +5,7 @@
  * @Project: one_server
  * @Filename: FixedBar.js
  * @Last modified by:   mymac
- * @Last modified time: 2017-12-18T18:06:18+08:00
+ * @Last modified time: 2017-12-18T18:11:09+08:00
  */
   import React, { PureComponent } from 'react'
   import {
