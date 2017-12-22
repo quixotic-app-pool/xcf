@@ -5,7 +5,7 @@
  * @Project: one_server
  * @Filename: FixedBar.js
  * @Last modified by:   mymac
- * @Last modified time: 2017-12-18T18:11:09+08:00
+ * @Last modified time: 2017-12-21T17:11:22+08:00
  */
   import React, { PureComponent } from 'react'
   import {
@@ -29,11 +29,16 @@
       }
       async addFavorite() {
         var userId = AsyncStorage.getItem('USER_ID')
-        await fetch('http://localhost:3000/api/addFavorite?userId=' + userId + '&recipeId=' + this.props.recipeId)
-               .then(function(response) {
-                 //获取数据,数据处理
-                 console.log('get server response when adding favorite:' + JSON.stringify(response));
-               });
+        // TODO: here we need to check what user_id looks like when valid
+        if(false){
+          await fetch('http://localhost:3000/api/addFavorite?userId=' + userId + '&recipeId=' + this.props.recipeId)
+                 .then(function(response) {
+                   //获取数据,数据处理
+                   console.log('get server response when adding favorite:' + JSON.stringify(response));
+                 });
+        } else {
+          this.props.leftPress()
+        }
       }
       goAsk() {
          this.props.navigate()

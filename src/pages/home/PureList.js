@@ -5,7 +5,7 @@
  * @Project: one_server
  * @Filename: PureList.js
  * @Last modified by:   mymac
- * @Last modified time: 2017-12-18T17:00:32+08:00
+ * @Last modified time: 2017-12-21T16:05:59+08:00
  */
 
  import React, { PureComponent } from 'react'
@@ -26,7 +26,8 @@
      this.state = {
        refreshing: true,
        pageNum: 0,
-       type: ''
+       type: '',
+       data: []
      }
      this._renderCell = this._renderCell.bind(this)
      this._header = this._header.bind(this)
@@ -43,18 +44,18 @@
         this._fetchData()
      })
    }
-   async _fetchData() {
+   _fetchData() {
      var self = this
      self.setState({refreshing: true})
      var page = self.state.pageNum
-     //  var userId = AsyncStorage.getItem('USER_ID')
-     var userId = '13913351453'
-     //  alert(JSON.stringify(userId))
-     await fetch('http://localhost:3000/api/fetchlist?type=' + self.state.type + '&page=' + page + '&userid=' + userId)
+     console.log('type: ' + self.state.type);
+     fetch('http://localhost:3000/api/fetchlist?type=' + self.state.type + '&page=' + page)
             .then(function(response) {
+              return response.json()
+            }).then(function(response){
               //获取数据,数据处理
               console.log('get server response when asking for list:' + JSON.stringify(response));
-              self.setState({pageNum: self.state.pageNum + 1, refreshing: false})
+              self.setState({data: response.data, pageNum: self.state.pageNum + 1, refreshing: false})
               self.props.navigation.setParams({ title: self.props.navigation.state.params.type })
             });
    }
@@ -90,10 +91,15 @@
      alert('refreshing')
    }
    render(){
+     if(this.state.data){
+       this.state.data.forEach(function(item, index) {
+         item.key = index
+       })
+     }
      return (
        <FlatList
         style={{backgroundColor: 'white', padding:20}}
-        data={[{key: 'a'}, {key: 'b'},{key: 'c'}, {key: 'd'}, {key: 'e'}, {key: 'f'},{key: 'g'}, {key: 'h'}]}
+        data={this.state.data}
         renderItem = {this._renderCell}
         onEndReached = {() => this._onReachEnd()}
         refreshing = {this.state.refreshing}

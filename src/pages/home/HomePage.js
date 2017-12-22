@@ -5,7 +5,7 @@
  * @Project: one_server
  * @Filename: HomePage.js
  * @Last modified by:   mymac
- * @Last modified time: 2017-12-18T17:30:38+08:00
+ * @Last modified time: 2017-12-21T16:41:46+08:00
  */
 
 import React, { PureComponent } from 'react'
@@ -27,7 +27,10 @@ class HomePage extends PureComponent {
   constructor() {
     super()
     this.state = {
-      refreshing: true
+      refreshing: true,
+      dataOfDiscount: [],
+      dataOfHotProject: [],
+      dataOfLatest: []
     }
     this._layer1 = this._layer1.bind(this)
     this._renderCell1 = this._renderCell1.bind(this)
@@ -40,7 +43,7 @@ class HomePage extends PureComponent {
     this.topItemActionCancel = this.topItemActionCancel.bind(this)
   }
   componentDidMount() {
-    Global.loggedIn = true
+    // Global.loggedIn = true
     // StatusBar.setBarStyle('light-content', false)
     InteractionManager.runAfterInteractions(() => {
       this.props.navigation.setParams({ title: '加载中' })
@@ -52,11 +55,20 @@ class HomePage extends PureComponent {
     self.props.navigation.setParams({ title: '加载中' })
     self.setState({refreshing: true})
     await fetch('http://localhost:3000/api/fetchmainpagecontent')
+           .then(function(res) {
+             return res.json()
+           })
            .then(function(response) {
              //获取数据,数据处理
-             console.log('get server response when asking for list:' + JSON.stringify(response));
+            //  console.log(response);
+             self.setState({
+               refreshing: false,
+               dataOfDiscount: response.data[0],
+               dataOfHotProject: response.data[1],
+               dataOfLatest: response.data[2]
+             })
+             console.log(self.state.dataOfHotProject);
              self.props.navigation.setParams({ title: '主页' })
-             self.setState({refreshing: false})
            });
   }
   _refreshContent() {
@@ -98,13 +110,18 @@ class HomePage extends PureComponent {
     )
   }
   _studioList() {
-    var data1 = [
-      {key:'1', author: 'yanyanfoo', title: '发面大包：鲜汁肉&翡翠蔬菜', imgUrl: './temp1.jpeg', numOfJoin: '583'},
-      {key:'2', author: 'sandcastle', title: '芝麻瓜子仁酥糖&椰香杏仁酥糖', imgUrl: './temp1.jpeg', numOfJoin: '424'},
-      {key:'3', author: 'sandcastle', title: '芝麻瓜子仁酥糖&椰香杏仁酥糖', imgUrl: './temp1.jpeg', numOfJoin: '424'},
-      {key:'4', author: 'sandcastle', title: '芝麻瓜子仁酥糖&椰香杏仁酥糖', imgUrl: './temp1.jpeg', numOfJoin: '424'},
-      {key:'5', author: 'sandcastle', title: '芝麻瓜子仁酥糖&椰香杏仁酥糖', imgUrl: './temp1.jpeg', numOfJoin: '424'}
-    ]
+    // var data1 = [
+    //   {key:'1', author: 'yanyanfoo', title: '发面大包：鲜汁肉&翡翠蔬菜', imgUrl: './temp1.jpeg', numOfJoin: '583'},
+    //   {key:'2', author: 'sandcastle', title: '芝麻瓜子仁酥糖&椰香杏仁酥糖', imgUrl: './temp1.jpeg', numOfJoin: '424'},
+    //   {key:'3', author: 'sandcastle', title: '芝麻瓜子仁酥糖&椰香杏仁酥糖', imgUrl: './temp1.jpeg', numOfJoin: '424'},
+    //   {key:'4', author: 'sandcastle', title: '芝麻瓜子仁酥糖&椰香杏仁酥糖', imgUrl: './temp1.jpeg', numOfJoin: '424'},
+    //   {key:'5', author: 'sandcastle', title: '芝麻瓜子仁酥糖&椰香杏仁酥糖', imgUrl: './temp1.jpeg', numOfJoin: '424'}
+    // ]
+    if(this.state.dataOfHotProject && this.state.dataOfHotProject.data) {
+      this.state.dataOfHotProject.data.forEach(function(item, index) {
+        item.key = index
+      })
+    }
     return (
       <View>
         <View style={{paddingTop:20, flexDirection:'row', justifyContent:'space-between'}}>
@@ -114,7 +131,7 @@ class HomePage extends PureComponent {
           </TouchableOpacity>
         </View>
         <FlatList horizontal={true} showsHorizontalScrollIndicator={false}
-          data={data1}
+          data={this.state.dataOfHotProject.data}
           renderItem={this._renderCell1}
         />
       </View>
@@ -124,34 +141,40 @@ class HomePage extends PureComponent {
     // StatusBar.setBarStyle('default', false)
     this.props.navigation.navigate('Recipe', { recipeId: recipeId })
   }
-  _renderCell1(item: Object) {
-    console.log(item.key)
+  _renderCell1(obj: Object) {
+    var item = obj.item;
+    // console.log(item.key)
     return (
-      <TouchableOpacity onPress={this.goItem.bind(this, item.id)} style={{paddingVertical: 10, flexDirection:'column', alignItems:'center', width: screenWidth/2 - 20}}>
+      <TouchableOpacity onPress={this.goItem.bind(this, item._id)} style={{paddingVertical: 10, flexDirection:'column', alignItems:'center', width: screenWidth/2 - 20}}>
         <View style={{paddingRight: 10, flex:1, flexDirection: "row"}}>
           <Image style={{flex: 1, height: 250}} source={require('./temp1.jpeg')}/>
           <View style={{marginLeft: 20, marginTop:200, position: 'absolute', backgroundColor: 'transparent'}}>
             <View style={{paddingVertical:2, width: 25, justifyContent:'center', flexDirection:'row', backgroundColor: '#FFD700', borderRadius:5}}>
-              <Text style={{fontSize:10}}>成都特色</Text>
+              <Text style={{fontSize:10}}>{item.tag}</Text>
             </View>
-            <Text style={styles.textSize}>经典名小吃...</Text>
           </View>
         </View>
 
         <View style={{paddingRight: 10, paddingTop: 10}}>
-          <Text style={{fontSize: 15}}>发面大包：鲜汁肉&翡翠蔬菜</Text>
+          <Text style={{fontSize: 15}}>{item.title}</Text>
         </View>
       </TouchableOpacity>
     )
   }
   _shopSpecial() {
-    var data2 = [
-      {key:'1', author: 'yanyanfoo', title: '发面大包：鲜汁肉&翡翠蔬菜', imgUrl: './temp1.jpeg', numOfJoin: '583'},
-      {key:'2', author: 'sandcastle', title: '芝麻瓜子仁酥糖&椰香杏仁酥糖', imgUrl: './temp1.jpeg', numOfJoin: '424'},
-      {key:'3', author: 'sandcastle', title: '芝麻瓜子仁酥糖&椰香杏仁酥糖', imgUrl: './temp1.jpeg', numOfJoin: '424'},
-      {key:'4', author: 'sandcastle', title: '芝麻瓜子仁酥糖&椰香杏仁酥糖', imgUrl: './temp1.jpeg', numOfJoin: '424'},
-      {key:'5', author: 'sandcastle', title: '芝麻瓜子仁酥糖&椰香杏仁酥糖', imgUrl: './temp1.jpeg', numOfJoin: '424'}
-    ]
+    // var data2 = [
+    //   {key:'1', author: 'yanyanfoo', title: '发面大包：鲜汁肉&翡翠蔬菜', imgUrl: './temp1.jpeg', numOfJoin: '583'},
+    //   {key:'2', author: 'sandcastle', title: '芝麻瓜子仁酥糖&椰香杏仁酥糖', imgUrl: './temp1.jpeg', numOfJoin: '424'},
+    //   {key:'3', author: 'sandcastle', title: '芝麻瓜子仁酥糖&椰香杏仁酥糖', imgUrl: './temp1.jpeg', numOfJoin: '424'},
+    //   {key:'4', author: 'sandcastle', title: '芝麻瓜子仁酥糖&椰香杏仁酥糖', imgUrl: './temp1.jpeg', numOfJoin: '424'},
+    //   {key:'5', author: 'sandcastle', title: '芝麻瓜子仁酥糖&椰香杏仁酥糖', imgUrl: './temp1.jpeg', numOfJoin: '424'}
+    // ]
+    if(this.state.dataOfDiscount && this.state.dataOfDiscount.data) {
+      this.state.dataOfDiscount.data.forEach(function(item, index) {
+        item.key = index
+      })
+    }
+    // console.log('this.state.dataOfDiscount.data: ' +  JSON.stringify(this.state.dataOfDiscount.data));
     return (
       <View>
         <View style={{paddingTop:20, flexDirection:'row', justifyContent:'space-between'}}>
@@ -161,38 +184,45 @@ class HomePage extends PureComponent {
           </TouchableOpacity>
         </View>
         <FlatList horizontal={true} showsHorizontalScrollIndicator={false}
-          data={data2}
+          data={this.state.dataOfDiscount.data}
           renderItem={this._renderCell2}
         />
       </View>
     )
   }
-  _renderCell2(item: Object) {
+  _renderCell2(obj: Object) {
+    // console.log('item:' + JSON.stringify(obj.item));
+    var item = obj.item;
     return (
-      <TouchableOpacity onPress={this.goItem.bind(this, item.id)} style={{paddingVertical: 10, flexDirection:'column', alignItems:'center', width: screenWidth/2 - 20}}>
+      <TouchableOpacity onPress={this.goItem.bind(this, item._id)} style={{paddingVertical: 10, flexDirection:'column', alignItems:'center', width: screenWidth/2 - 20}}>
         <View style={{paddingRight: 10, flex:1, flexDirection: "row"}}>
           <Image style={{flex: 1, height: 250}} source={require('./temp1.jpeg')}/>
           <View style={{marginLeft: 20, marginTop:200, position: 'absolute', backgroundColor: 'transparent'}}>
             <View style={{paddingVertical:2, width: 25, justifyContent:'center', flexDirection:'row', backgroundColor: '#FFD700', borderRadius:5}}>
-              <Text style={{fontSize:10}}>学二送一</Text>
+              <Text style={{fontSize:10}}>{item.tag}</Text>
             </View>
           </View>
         </View>
 
         <View style={{paddingRight: 10, paddingTop: 10}}>
-          <Text style={{fontSize: 15}}>10分钟考出留蜜的红薯，全靠这个神器！</Text>
+          <Text style={{fontSize: 15}}>{item.title}</Text>
         </View>
       </TouchableOpacity>
     )
   }
   _recipeRec() {
-    var data3 = [
-      {key:'1', author: 'yanyanfoo', title: '发面大包：鲜汁肉&翡翠蔬菜', imgUrl: './temp1.jpeg', numOfJoin: '583'},
-      {key:'2', author: 'sandcastle', title: '芝麻瓜子仁酥糖&椰香杏仁酥糖', imgUrl: './temp1.jpeg', numOfJoin: '424'},
-      {key:'3', author: 'sandcastle', title: '芝麻瓜子仁酥糖&椰香杏仁酥糖', imgUrl: './temp1.jpeg', numOfJoin: '424'},
-      {key:'4', author: 'sandcastle', title: '芝麻瓜子仁酥糖&椰香杏仁酥糖', imgUrl: './temp1.jpeg', numOfJoin: '424'},
-      {key:'5', author: 'sandcastle', title: '芝麻瓜子仁酥糖&椰香杏仁酥糖', imgUrl: './temp1.jpeg', numOfJoin: '424'}
-    ]
+    // var data3 = [
+    //   {key:'1', author: 'yanyanfoo', title: '发面大包：鲜汁肉&翡翠蔬菜', imgUrl: './temp1.jpeg', numOfJoin: '583'},
+    //   {key:'2', author: 'sandcastle', title: '芝麻瓜子仁酥糖&椰香杏仁酥糖', imgUrl: './temp1.jpeg', numOfJoin: '424'},
+    //   {key:'3', author: 'sandcastle', title: '芝麻瓜子仁酥糖&椰香杏仁酥糖', imgUrl: './temp1.jpeg', numOfJoin: '424'},
+    //   {key:'4', author: 'sandcastle', title: '芝麻瓜子仁酥糖&椰香杏仁酥糖', imgUrl: './temp1.jpeg', numOfJoin: '424'},
+    //   {key:'5', author: 'sandcastle', title: '芝麻瓜子仁酥糖&椰香杏仁酥糖', imgUrl: './temp1.jpeg', numOfJoin: '424'}
+    // ]
+    if(this.state.dataOfLatest && this.state.dataOfLatest.data) {
+      this.state.dataOfLatest.data.forEach(function(item, index) {
+        item.key = index
+      })
+    }
     return (
       <View>
         <View style={{paddingTop:20, flexDirection:'row', justifyContent:'space-between'}}>
@@ -202,32 +232,30 @@ class HomePage extends PureComponent {
           </TouchableOpacity>
         </View>
         <FlatList horizontal={true} showsHorizontalScrollIndicator={false}
-          data={data3}
+          data={this.state.dataOfLatest.data}
           renderItem={this._renderCell3}
         />
       </View>
     )
   }
 
-  _renderCell3(item: Object) {
+  _renderCell3(obj: Object) {
+    var item = obj.item;
     return (
-      <TouchableOpacity onPress={this.goItem.bind(this, item.id)} style={{paddingVertical: 10, flexDirection:'column', alignItems:'center', width: screenWidth - 50}}>
+      <TouchableOpacity onPress={this.goItem.bind(this, item._id)} style={{paddingVertical: 10, flexDirection:'column', alignItems:'center', width: screenWidth - 50}}>
         <View style={{paddingRight: 10, flex:1, flexDirection: "row"}}>
           <Image style={{flex: 1, height: 250}} source={require('./temp1.jpeg')}/>
           <View style={{marginLeft: 20, marginTop:200, position: 'absolute', backgroundColor: 'transparent'}}>
             <View style={{paddingVertical:2, width: 25, justifyContent:'center', flexDirection:'row', backgroundColor: '#FFD700', borderRadius:5}}>
-              <Text style={{fontSize:10}}>快手热门</Text>
+              <Text style={{fontSize:10}}>{item.tag}</Text>
             </View>
-            <Text style={styles.textSize}>猪肉这样做，香到放不下筷...</Text>
+            <Text style={styles.textSize}>{item.title}</Text>
           </View>
         </View>
       </TouchableOpacity>
     )
   }
   render() {
-    var latestSearch = ['快手菜','下饭菜', '家常菜']
-    var trend = ['蛋糕','红烧肉', '可乐鸡翅','蛋挞','家常菜', '面包','早餐','糖醋排骨',
-                '豆腐','牛肉','排骨', '茄子','南瓜饼','虾', '土豆','宫保鸡丁','披萨', '汤','蛋黄酥','南瓜']
     return (
       <View style={{backgroundColor: '#ffffff'}}>
         <ScrollView

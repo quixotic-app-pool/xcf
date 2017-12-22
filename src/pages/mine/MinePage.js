@@ -5,7 +5,7 @@
  * @Project: one_server
  * @Filename: MinePage.js
  * @Last modified by:   mymac
- * @Last modified time: 2017-12-18T16:29:41+08:00
+ * @Last modified time: 2017-12-21T16:38:29+08:00
  */
 
 
@@ -17,6 +17,7 @@
  import { NavigationItem } from '../../widget'
 
  const screenWidth = Dimensions.get('window').width
+ const screenHeight = Dimensions.get('window').height
 
  export default class MinePage extends PureComponent {
 
@@ -25,10 +26,11 @@
     });
 
    state = {
-      loggedIn: true,
+      loggedIn: false,
       selected: 0,
       refreshing: false,
-      pageNum: 0
+      pageNum: 0,
+      data: []
     };
 
    constructor() {
@@ -47,9 +49,13 @@
       var userId = '13913351453'
 
       await fetch('http://localhost:3000/api/fetchfavoriteorread?index=' + index + '&page=' + this.state.pageNum + '&userid=' + userId)
+             .then(function(res){
+               return res.json();
+             })
              .then(function(response) {
                //获取数据,数据处理
                console.log('get server response when asking for list of favorite or read:' + JSON.stringify(response));
+               self.setState({data: response.data})
                self.props.navigation.setParams({ title: '我' })
                self.setState({refreshing: false, pageNum: self.state.pageNum + 1})
              });
@@ -78,7 +84,9 @@
     //  StatusBar.setBarStyle('default', false)
      this.props.navigation.navigate('Recipe', { info: {} })
    }
-   _renderCell(){
+   _renderCell(obj: Object){
+     var item = obj.item;
+     // TODO: here we need to test with other configuration done
      return(
        <TouchableOpacity onPress={() => this.goItem()} style={{paddingBottom: 20, flexDirection:'row', width:screenWidth-40, justifyContent:'space-between'}}>
           <View style={{}}>
@@ -104,6 +112,11 @@
      this.chooseTopic(this.state.selected, this.state.pageNum)
    }
    render(){
+     if(this.state.data) {
+       this.state.data.forEach(function(item, index) {
+         item.key = index
+       })
+     }
      return (
        <View>
          {this.state.loggedIn ?
@@ -115,8 +128,8 @@
                       tintColor='gray'
                   />
               }
-              style={{backgroundColor: 'white', padding:20}}
-              data={[{key: 'a'}, {key: 'b'},{key: 'c'}, {key: 'd'}, {key: 'e'}, {key: 'f'},{key: 'g'}, {key: 'h'}]}
+              style={{backgroundColor: 'white', padding:20, height: screenHeight}}
+              data={this.state.data}
               renderItem = {this._renderCell.bind(this)}
               ListHeaderComponent = {this._header.bind(this)}
               onEndReached = {() => this._onReachEnd()}
